@@ -16,8 +16,8 @@
 //= require ember
 //= require ember-data
 //= require_self
-//= require ace-builds/src-noconflict/ace
-//= require ace-builds/src-noconflict/ext-language_tools
+//= require ace-noconflict/ace
+//= require ace-noconflict/ext-language_tools
 //= require nagiza
 
 // for more details see: http://emberjs.com/guides/application/

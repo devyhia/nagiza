@@ -83,14 +83,34 @@ html, body {
 </div>
 <div class='container-fluid main'>
 	<div class='row'>
-		<div id='editor' class='col-xs-6 code-wrapper'></div>
-    <div class='col-xs-3 assembly-wrapper'>
+		<div id='editor' class='col-xs-3 code-wrapper'></div>
+    <div id='editor-true' class='col-xs-3 code-wrapper'></div>
+    <div class='col-xs-2 assembly-wrapper'>
       <h4>Assembly</h4>
       {{#each assembly}}
         {{this}},<br/>
       {{/each}}
     </div>
-		<div class='col-xs-3 registers-wrapper'>
+    <div class='col-xs-2 registers-wrapper'>
+      <h4>Memory</h4>
+      <table class="table table-striped table-hover ">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each memory_array}}
+          <tr>
+            <td>{{id}}</td>
+            <td>{{value}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+		<div class='col-xs-2 registers-wrapper'>
 			<h4>Registers</h4>
       <table class="table table-striped table-hover ">
         <thead>

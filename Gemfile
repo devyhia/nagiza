@@ -36,6 +36,8 @@ end
 gem 'ember-rails' # installs all ember's dependencies
 gem 'active_model_serializers' # for serializing models into JSON for API
 
+# gem 'requirejs-rails'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 

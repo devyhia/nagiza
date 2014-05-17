@@ -4,12 +4,9 @@
   <title>Nagiza</title>
   <%= stylesheet_link_tag    "application", media: "all"%>
   <%= javascript_include_tag "application" %>
-
-	<link href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/lumen/bootstrap.min.css" rel="stylesheet">
-	<%= javascript_include_tag "//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js" %>
-	<%= javascript_include_tag "//cdn.jsdelivr.net/ace/1.1.3/min/ace.js" %>
-	<%= javascript_include_tag "//cdn.jsdelivr.net/ace/1.1.3/min/ext-chromevox.js" %>
-	
+  <!-- //= require ace/ace -->
+  <link href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/lumen/bootstrap.min.css" rel="stylesheet">
+  <%= javascript_include_tag "//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js" %>
   <%= csrf_meta_tags %>
 </head>
 <body>

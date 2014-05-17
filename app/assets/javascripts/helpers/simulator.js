@@ -1,6 +1,6 @@
 var ISA = {
 	ADD: /ADD\s+\$(\d+),\s+\$(\d+),\s+\$(\d+)\((\-?\d+)\)/i,
-	ADDI: /ADDI\s+\$(\d+),\s+\$(\d+),\s+(\d+)/i,
+	ADDI: /ADDI\s+\$(\d+),\s+\$(\d+),\s+(\-?\d+)/i,
 	SUB: /SUB\s+\$(\d+),\s+\$(\d+),\s+\$(\d+)\((\-?\d+)\)/i,
 	AND: /AND\s+\$(\d+),\s+\$(\d+),\s+\$(\d+)\((\-?\d+)\)/i,
 	ANDI: /ANDI\s+\$(\d+),\s+\$(\d+),\s+(\d+)/i,
@@ -15,11 +15,11 @@ var ISA = {
 	SW: /SW\s+\$(\d+),\s+\$(\d+),\s+(\d+)/i,
 	CEQ: /CEQ\s+\$(\d+),\s+\$(\d+)/i,
 	CLT: /CLT\s+\$(\d+),\s+\$(\d+)/i,
-	BT: /BT\s+(\w+)/i,
-	BF: /BF\s+(\w+)/i,
-	BOF: /BOF\s+(\w+)/i,
-	BTL: /BTL\s+\$(\d+),\s+(\w+)/i,
-	BOFL: /BOFL\s+\$(\d+),\s+(\w+)/i,
+	BT: /BT\s+\:(\w+)/i,
+	BF: /BF\s+\:(\w+)/i,
+	BOF: /BOF\s+\:(\w+)/i,
+	BTL: /BTL\s+\$(\d+),\s+\:(\w+)/i,
+	BOFL: /BOFL\s+\$(\d+),\s+\:(\w+)/i,
 	BCD: /BCD\s+\$(\d+),\s+(\d+)/i,
 	JR: /JR\s+\$(\d+)/i,
 	STALL: /STALL\s+\$(\d+),\s+(\d+)/i,
@@ -145,6 +145,7 @@ function execute(controller, code) {
 		var imm = parseInt(temp[3]);
 		var rt = registers[parseInt(temp[1])].get('value');
 		memory[rs + imm] = rt;
+		controller.set('memory_changed', Date()); // Timestamp
 		console.log('++ SW');
 	}
 
@@ -521,4 +522,83 @@ function assemble(controller, code) {
 	}
 
 	controller.set('assembly', assembly);
+}
+
+function _process_macros(program) {
+	// var lines = [];
+	// program.replace(/@up_head/i, 1).split('\n').forEach(function(l) {
+	// 	lines.push(l
+	// 		.replace(/@down_head/i, 2)
+	// 		.replace(/@right_head/i, 3)
+	// 		.replace(/@left_head/i, 4)
+	// 		.replace(/@up_body/i, 5)
+	// 		.replace(/@down_body/i, 6)
+	// 		.replace(/@right_body/i, 7)
+	// 		.replace(/@left_body/i, 8)
+	// 		.replace(/@apple/i, 9)
+	// 		.replace(/@black/i, 0)
+	// 		.replace(/@blue/i, 1)
+	// 		.replace(/@green/i, 2)
+	// 		.replace(/@cyan/i, 3)
+	// 		.replace(/@red/i, 4)
+	// 		.replace(/@pink/i, 5)
+	// 		.replace(/@yellow/i, 6)
+	// 		.replace(/@white/i, 7)
+	// 		.replace(/li\s+(\$\d+),\s+(\d+)/gi, "addi $1, $0, $2"));
+	// });	
+	// return lines;
+	return program
+			.replace(/\$(\w+)/gi, function(match, p1) {
+				switch(p1) {
+					case "return":
+						return "$31";
+					case "head":
+						return "$30";
+					case "key":
+						return "$29";
+					case "score":
+						return "$28";
+					case "x":
+						return "$27";
+					case "y":
+						return "$26";
+					default:
+						return "$"+p1;
+				}
+			})
+			.replace(/brl\s+(\:\w+)/gi, function(match, p1) {
+				return "ceq $0, $0\n"+
+				"btl $31, "+p1;
+			})
+			.replace(/@center/gi, 1)
+			.replace(/@up/i, 2)
+			.replace(/@down/gi, 4)
+			.replace(/@right/gi, 3)
+			.replace(/@left/gi, 5)
+			.replace(/@up_head/i, 1)
+			.replace(/@down_head/gi, 2)
+			.replace(/@right_head/gi, 3)
+			.replace(/@left_head/gi, 4)
+			.replace(/@up_body/gi, 5)
+			.replace(/@down_body/gi, 6)
+			.replace(/@right_body/gi, 7)
+			.replace(/@left_body/gi, 8)
+			.replace(/@apple/gi, 9)
+			.replace(/@black/gi, 0)
+			.replace(/@blue/gi, 1)
+			.replace(/@green/gi, 2)
+			.replace(/@cyan/gi, 3)
+			.replace(/@red/gi, 4)
+			.replace(/@pink/gi, 5)
+			.replace(/@yellow/gi, 6)
+			.replace(/@white/gi, 7)
+			.replace(/li\s+(\$\d+),\s+(\d+)/gi, "addi $1, $0, $2")
+			.replace(/point\s+(\$\d+),\s+(\$\d+),\s+(\d+)/gi, function(match, p1, p2, p3) {
+				return "addi $10, $0, 6\n" // function (point)
+						+"addi $11, "+p1+", 0\n" // x
+						+"addi $12, "+p2+", 0\n" // y
+						+"addi $15, $0, "+p3+"\n" // color
+						+"GRAPHCALL"; // Trigger the graph call
+			})
+			.split('\n');
 }

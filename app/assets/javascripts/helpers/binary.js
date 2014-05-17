@@ -63,3 +63,7 @@ function intToBinary(num, length) {
 
 	return bin_reverse;
 }
+
+Ember.Handlebars.helper('getIndex', function(item, array, options) {
+  return array.indexOf(item);
+});
